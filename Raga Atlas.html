@@ -1,0 +1,708 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Raga Atlas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Hind:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: three working columns — finder | keyboard & scale | the raga's story. Palette from Kerala mural pigments: red oxide, ochre, malachite, indigo on pale lime-wash. */
+:root{
+  --bg:#ECEFE4; --surface:#F7F8F1; --sunk:#E2E6D8; --ink:#1C2118; --muted:#5A6253; --line:#CBD1BF;
+  --accent:#A3361F; --ochre:#B07A12; --green:#2E5E3B; --indigo:#36467A;
+  --kw:#FCFCF7; --kb:#1B1D18; --kline:#9EA592; --kon:#C9563A; --konb:#A3361F; --ksa:#D9A12B; --klit:#2E5E3B;
+  --f-display:"Rozha One", "Noto Serif Devanagari", Georgia, serif;
+  --f-body:"Hind", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F160F; --surface:#162016; --sunk:#1C281C; --ink:#E7EBDD; --muted:#9BA593; --line:#2C3A2B;
+  --accent:#E57858; --ochre:#E0AE4A; --green:#7DB78B; --indigo:#93A4DD;
+  --kw:#E3E1D3; --kb:#090B08; --kline:#5E6656; --kon:#D8694B; --konb:#B4462B; --ksa:#E0AE4A; --klit:#4E9B63;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F160F; --surface:#162016; --sunk:#1C281C; --ink:#E7EBDD; --muted:#9BA593; --line:#2C3A2B;
+  --accent:#E57858; --ochre:#E0AE4A; --green:#7DB78B; --indigo:#93A4DD;
+  --kw:#E3E1D3; --kb:#090B08; --kline:#5E6656; --kon:#D8694B; --konb:#B4462B; --ksa:#E0AE4A; --klit:#4E9B63;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 40px}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sys-C{--sc:var(--accent)} .sys-H{--sc:var(--ochre)} .sys-A{--sc:var(--green)} .sys-W{--sc:var(--indigo)}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 28px;padding-block:22px 18px;border-bottom:1px solid var(--line);max-width:1480px;margin:0 auto}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,4vw,42px);line-height:1;margin:0;letter-spacing:.005em}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:60ch}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.legend i{width:10px;height:10px;border-radius:2px;background:var(--sc)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ctl{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.ctl label{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ctl select{background:transparent;border:0;font-family:var(--f-mono);font-size:14px;padding:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--muted)}
+.btn.on{background:var(--green);border-color:var(--green);color:var(--bg)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn svg{width:14px;height:14px;fill:currentColor}
+
+.app{max-width:1480px;margin:22px auto 0;display:grid;gap:22px;
+  grid-template-columns:minmax(260px,300px) minmax(0,1fr) minmax(280px,340px);
+  grid-template-areas:"find main about";align-items:start}
+.find{grid-area:find;position:sticky;top:env(safe-area-inset-top, 0px)}
+.main{grid-area:main;min-width:0}
+.about{grid-area:about;min-width:0}
+@media (max-width:1180px){.app{grid-template-columns:minmax(250px,290px) minmax(0,1fr);grid-template-areas:"find main" "find about"}}
+@media (max-width:780px){.app{grid-template-columns:minmax(0,1fr);grid-template-areas:"find" "main" "about"}.find{position:static}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:12px 8px;cursor:pointer;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.fbody{padding:14px;display:flex;flex-direction:column;gap:12px}
+.search{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:15px}
+.search::placeholder{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{list-style:none;margin:0;padding:0 6px 8px;max-height:calc(100vh - 330px);min-height:220px;overflow:auto;border-top:1px solid var(--line)}
+@media (max-width:780px){.list{max-height:360px}}
+.list li button{width:100%;text-align:left;display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:10px;align-items:center;border:0;background:transparent;padding:8px 8px;border-radius:6px;cursor:pointer}
+.list li button:hover{background:var(--sunk)}
+.list li button[aria-current="true"]{background:var(--sunk)}
+.list .bar{width:4px;height:28px;border-radius:2px;background:var(--sc)}
+.list .nm{font-weight:500;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .sub{font-size:12px;color:var(--muted);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .grp{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 8px 4px}
+.dots{display:grid;grid-template-columns:repeat(12,5px);gap:2px}
+.dots i{width:5px;height:12px;border-radius:1px;background:var(--line)}
+.dots i.on{background:var(--sc)}
+.dots i.k{opacity:.9}
+.count{font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:13px;padding:14px 8px}
+
+.notegrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.note{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:6px 2px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.note b{font-weight:600;font-size:14px}
+.note small{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.note[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.note[aria-pressed="true"] small{color:#fff;opacity:.85}
+.note.sa{background:var(--ochre);border-color:var(--ochre);color:#1c1608;cursor:default}
+.note.sa small{color:#1c1608}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:7px 4px;font-size:12px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.minipiano{overflow-x:auto}
+.minipiano svg{display:block;width:100%;height:auto;max-height:110px}
+.row2{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.link{border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-size:12px;text-decoration:underline;text-underline-offset:2px}
+
+/* main */
+.rhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px 18px;margin-bottom:14px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.eyebrow .tag{background:var(--sc);color:var(--bg);padding:2px 8px;border-radius:3px;font-weight:600;letter-spacing:.08em}
+.rname{font-family:var(--f-display);font-weight:400;font-size:clamp(36px,5.2vw,60px);line-height:1.02;margin:6px 0 2px;text-wrap:balance}
+.rname .script{font-family:"Noto Naskh Arabic","Geeza Pro",serif;font-size:.55em;color:var(--muted);margin-left:.3em}
+.aka{color:var(--muted);font-size:14px}
+.playbar{display:flex;gap:8px;flex-wrap:wrap}
+.pianowrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 14px 12px;overflow-x:auto}
+.pianowrap svg{display:block;width:100%;min-width:520px;height:auto}
+.keyhint{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.keyhint span{display:inline-flex;gap:6px;align-items:center}
+.keyhint i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.k{stroke:var(--kline);stroke-width:1;transition:fill .12s}
+.k.w{fill:var(--kw)} .k.b{fill:var(--kb)}
+.k.w.on{fill:var(--kon)} .k.b.on{fill:var(--konb)}
+.k.sa{fill:var(--ksa)!important}
+.k.mi{fill:url(#hatchmainPiano)!important}
+.k.lit{fill:var(--klit)!important}
+.k.off{opacity:.35}
+.k.click{cursor:pointer}
+.kl{font-family:var(--f-mono);font-size:10px;text-anchor:middle;pointer-events:none;font-weight:500}
+.kl.w{fill:#fff} .kl.b{fill:#fff} .kl.saL{fill:#1c1608}
+.kl.dim{fill:var(--kline)}
+
+.scales{margin-top:16px;display:grid;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.srow{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.srow:first-child{border-top:0}
+@media (max-width:560px){.srow{grid-template-columns:minmax(0,1fr) auto}.srow .lab{grid-column:1 / -1}}
+.lab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sw{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:flex-end}
+.tok{position:relative;font-family:var(--f-mono);font-size:15px;font-weight:500;padding:5px 7px 3px;border-radius:5px;background:var(--sunk);min-width:30px;text-align:center;line-height:1.2}
+.tok sub{font-size:10px;margin-left:1px}
+.tok.hi::after,.tok.lo::after{content:"";position:absolute;left:50%;width:4px;height:4px;border-radius:50%;background:var(--ink);transform:translateX(-50%)}
+.tok.hi::after{top:1px} .tok.lo::after{bottom:-1px}
+.tok.k{text-decoration:underline;text-underline-offset:3px}
+.tok.t::before{content:"";position:absolute;top:0;left:50%;width:1.5px;height:5px;background:var(--ink)}
+.tok.lit{background:var(--klit);color:#fff}
+.tok.lit::after,.tok.lit::before{background:#fff}
+.tok.plain{background:transparent;padding-inline:3px;min-width:0}
+.steps{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.iconbtn{border:1px solid var(--line);background:var(--bg);border-radius:50%;width:34px;height:34px;display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:13px;height:13px;fill:var(--ink)}
+.iconbtn:hover{border-color:var(--muted)}
+
+h2.sec{font-family:var(--f-display);font-weight:400;font-size:24px;margin:30px 0 4px;line-height:1.15}
+.secnote{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:70ch}
+.xgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:980px){.xgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+.xcol{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--sc);border-radius:8px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.xcol h3{margin:0;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.xlink{border:0;background:none;padding:0;text-align:left;cursor:pointer;font-weight:500;color:var(--ink);font-size:15px;line-height:1.3}
+.xlink:hover{color:var(--sc);text-decoration:underline;text-underline-offset:2px}
+.xlink small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.xnone{color:var(--muted);font-size:13px}
+.approx{font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+
+.graha{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.grow{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding:10px 14px;border-top:1px solid var(--line);align-items:baseline}
+.grow:first-child{border-top:0}
+.grow .from{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.grow .to{display:flex;flex-wrap:wrap;gap:4px 14px}
+.inline-sys{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--sc);margin-right:6px;vertical-align:1px}
+.fam{display:flex;flex-wrap:wrap;gap:6px}
+.fam .xlink{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13.5px;background:var(--surface)}
+
+/* about */
+.about .panel{padding:18px 18px 20px}
+.about h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:0 0 2px}
+.about .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+.blk{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.blk h3{margin:0 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sc);font-weight:600}
+.blk p{margin:0;font-size:14.5px;max-width:65ch}
+.comps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.comps li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:baseline}
+.comps li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sc);transform:translateY(-2px)}
+.comps b{font-weight:600;display:block;line-height:1.3}
+.comps span{font-size:13px;color:var(--muted)}
+.facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;font-size:13.5px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.note-src{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.45}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="brand">
+    <h1>Raga <span>Atlas</span></h1>
+    <p id="tagline">One keyboard for four traditions. Find a raga by name or by its notes, and see what it is called elsewhere.</p>
+    <div class="legend">
+      <span class="sys-C"><i></i>Carnatic</span><span class="sys-H"><i></i>Hindustani</span><span class="sys-A"><i></i>Arabic maqam</span><span class="sys-W"><i></i>Western</span>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="ctl"><label for="tonic">Sa =</label><select id="tonic" aria-label="Pitch of Sa (tonic)"></select></div>
+    <button class="btn" id="drone" aria-pressed="false" title="Tanpura-style drone on Sa and Pa"><svg viewBox="0 0 16 16"><path d="M7 2h2v12H7zM3 6h2v8H3zM11 4h2v10h-2z"/></svg>Drone</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="find panel" aria-label="Find a raga">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-name" aria-selected="true" aria-controls="pane-name">Search by name</button>
+      <button role="tab" id="tab-notes" aria-selected="false" aria-controls="pane-notes">Find by notes</button>
+    </div>
+    <div id="pane-name" role="tabpanel" aria-labelledby="tab-name">
+      <div class="fbody">
+        <input id="q" class="search" type="search" placeholder="Kalyani, Yaman, Hijaz, Dorian…" autocomplete="off" aria-label="Search raga, maqam or scale name">
+        <div class="chips" id="sysf"></div>
+        <div class="count" id="qcount"></div>
+      </div>
+      <ul class="list" id="nlist"></ul>
+    </div>
+    <div id="pane-notes" role="tabpanel" aria-labelledby="tab-notes" hidden>
+      <div class="fbody">
+        <div class="row2"><span class="lab">Tap keys or swaras</span><button class="link" id="clearN">Clear</button></div>
+        <div class="minipiano" id="mpiano"></div>
+        <div class="notegrid" id="ngrid"></div>
+        <div class="row2"><span class="lab">Label swaras as</span>
+          <div class="chips" id="lblstyle"></div></div>
+        <div class="seg" id="mmode" role="group" aria-label="Match type">
+          <button data-m="exact" aria-pressed="true">Exactly these</button>
+          <button data-m="has" aria-pressed="false">Has all these</button>
+          <button data-m="within" aria-pressed="false">Only these</button>
+        </div>
+        <div class="count" id="ncount"></div>
+      </div>
+      <ul class="list" id="mlist"></ul>
+    </div>
+  </aside>
+
+  <main class="main" id="main"></main>
+  <section class="about" id="about" aria-label="About this raga"></section>
+</div>
+
+<script>
+/* ---------------- notation tables ---------------- */
+const CARN={S:0,R1:1,R2:2,R3:3,G1:2,G2:3,G3:4,M1:5,M2:6,P:7,D1:8,D2:9,D3:10,N1:9,N2:10,N3:11};
+const HIND={S:0,r:1,R:2,g:3,G:4,m:5,M:6,P:7,d:8,D:9,n:10,N:11};
+const HSYL={S:"Sa",r:"Re",R:"Re",g:"Ga",G:"Ga",m:"Ma",M:"Ma",P:"Pa",d:"Dha",D:"Dha",n:"Ni",N:"Ni"};
+const C_GEN=["S","R1","R2","G2","G3","M1","M2","P","D1","D2","N2","N3"];
+const C_ALT=["","","G1","R3","","","","","","N1","D3",""];
+const H_GEN=["S","r","R","g","G","m","M","P","d","D","n","N"];
+const SYSN={C:"Carnatic",H:"Hindustani",A:"Arabic maqam",W:"Western"};
+const ORDER=["C","H","A","W"];
+const TONICS=[["C",0,0],["C♯",0,1],["D",1,0],["E♭",2,-1],["E",2,0],["F",3,0],["F♯",3,1],["G",4,0],["A♭",5,-1],["A",5,0],["B♭",6,-1],["B",6,0]];
+const LP=[0,2,4,5,7,9,11], LETTERS="CDEFGAB";
+const DEG=[0,1,1,2,2,3,3,4,5,5,6,6];
+const CHAKRA=["Indu","Netra","Agni","Veda","Bana","Rutu","Rishi","Vasu","Brahma","Disi","Rudra","Aditya"];
+const MELA=["Kanakangi","Ratnangi","Ganamurthi","Vanaspathi","Manavathi","Tanarupi","Senavathi","Hanumatodi","Dhenuka","Natakapriya","Kokilapriya","Rupavathi","Gayakapriya","Vakulabharanam","Mayamalavagowla","Chakravakam","Suryakantham","Hatakambari","Jhankaradhwani","Natabhairavi","Keeravani","Kharaharapriya","Gourimanohari","Varunapriya","Mararanjani","Charukesi","Sarasangi","Harikambhoji","Dheerasankarabharanam","Naganandini","Yagapriya","Ragavardhini","Gangeyabhushani","Vagadheeswari","Shulini","Chalanata","Salagam","Jalarnavam","Jhalavarali","Navaneetam","Pavani","Raghupriya","Gavambhodi","Bhavapriya","Shubhapantuvarali","Shadvidamargini","Suvarnangi","Divyamani","Dhavalambari","Namanarayani","Kamavardhini","Ramapriya","Gamanashrama","Vishwambari","Shyamalangi","Shanmukhapriya","Simhendramadhyamam","Hemavati","Dharmavati","Neethimathi","Kanthamani","Rishabhapriya","Latangi","Vachaspati","Mechakalyani","Chitrambari","Sucharitra","Jyotiswarupini","Dhatuvardhani","Nasikabhushani","Kosalam","Rasikapriya"];
+const RG=[["R1","G1"],["R1","G2"],["R1","G3"],["R2","G2"],["R2","G3"],["R3","G3"]];
+const DN=[["D1","N1"],["D1","N2"],["D1","N3"],["D2","N2"],["D2","N3"],["D3","N3"]];
+
+const MELA_ORIGIN="The 72-melakarta grid was laid out by Venkatamakhin in Chaturdandi Prakashika (c. 1660). The fully sampurna forms and the names in use today follow Govindacharya's Sangraha Chudamani (18th c.), where the first two syllables of each name encode its number through the Katapayadi scheme.";
+const MELA_COINED="Scheme: Venkatamakhin (c. 1660). Present name and form: Govindacharya, Sangraha Chudamani.";
+const MELA_COMPS=[{t:"Kanda Gana Amudam",by:"Koteeswara Iyer — a kriti in each of the 72 melakartas"},{t:"72 Melaragamalika",by:"Maha Vaidyanatha Iyer — one composition moving through all 72"}];
+
+/* curated detail for melakartas */
+const MX={
+ 8:{aka:["Todi","Thodi"],coined:"Traditional raga; 'Hanumatodi' is its melakarta name in the Govindacharya scheme.",origin:"Todi is among the oldest and most respected ragas in Carnatic music and is often used as the yardstick of a musician's command of gamaka.",desc:"Heavy, wide oscillations on G2 and D1 carry the raga; the bare scale gives only its outline. Same notes as Hindustani Bhairavi thaat, Western Phrygian and maqam Kurd, though the treatment is very different.",comps:[{t:"Kaddanuvariki",by:"Tyagaraja"},{t:"Rave Himagiri Kumari",by:"Syama Sastri (swarajati)"},{t:"Kamalambike",by:"Muthuswami Dikshitar (Kamalamba Navavarana, dhyana kriti)"}]},
+ 14:{desc:"The same seven notes as maqam Hijaz and the Western Phrygian dominant scale, heard across flamenco and klezmer as well."},
+ 15:{aka:["Malavagowla"],coined:"Traditional; set as the first raga of Carnatic training by Purandara Dasa (1484–1564).",origin:"Descended from the older Malavagowla. Purandara Dasa chose it for the beginner's exercises (sarali varisai, janta varisai), so nearly every Carnatic student begins here.",desc:"Built from two matching tetrachords (S R1 G3 M1 | P D1 N3 S) separated by a whole tone, which makes it ideal for training the ear. Same notes as Hindustani Bhairav, maqam Hijaz Kar and the Western double harmonic scale.",comps:[{t:"Tulasidala",by:"Tyagaraja"},{t:"Sri Nathadi Guruguho",by:"Muthuswami Dikshitar"},{t:"Deva Deva Kalayami",by:"Swati Tirunal"}]},
+ 16:{desc:"A devotional, slightly plaintive mela. Hindustani Ahir Bhairav uses the same notes.",comps:[{t:"Sugunamule",by:"Tyagaraja"}]},
+ 20:{desc:"Same notes as the Western natural minor (Aeolian) and Hindustani Asavari thaat. Parent of Hindolam and of Carnatic Bhairavi."},
+ 21:{desc:"Same notes as the Western harmonic minor. Hindustani music borrowed it as Kirwani in the 20th century.",comps:[{t:"Kaligiyunte",by:"Tyagaraja"}]},
+ 22:{coined:"Traditional; brought to prominence largely by Tyagaraja's compositions.",origin:"Kharaharapriya was rarely used before Tyagaraja, whose kritis made it one of the central ragas of the repertoire.",desc:"Expansive and suited to long alapana. Same notes as the Western Dorian mode and Hindustani Kafi thaat. Parent of many popular janyas: Abhogi, Sriranjani, Madhyamavati and Sri.",comps:[{t:"Chakkani Raja",by:"Tyagaraja"},{t:"Pakkala Nilabadi",by:"Tyagaraja"},{t:"Rama Nee Samanamevaru",by:"Tyagaraja"}]},
+ 23:{desc:"Same notes as the Western melodic (jazz) minor.",comps:[{t:"Guruleka Etuvanti",by:"Tyagaraja"}]},
+ 26:{desc:"A plaintive, tender mela. Hindustani music adopted it as Charukeshi.",comps:[{t:"Adamodi Galade",by:"Tyagaraja"}]},
+ 28:{desc:"Same notes as the Western Mixolydian mode and Hindustani Khamaj thaat. Parent of Mohanam and Kambhoji.",comps:[{t:"Rama Nannu Brovara",by:"Tyagaraja"},{t:"Dinamani Vamsa",by:"Tyagaraja"}]},
+ 29:{aka:["Shankarabharanam","Sankarabharanam"],coined:"Traditional; 'Dheerasankarabharanam' is its melakarta name.",origin:"An ancient raga name, 'the ornament of Shiva'. K. Viswanath's 1980 Telugu film Sankarabharanam is named after it.",desc:"Identical in notes to the Western major scale and Hindustani Bilawal thaat, but sung with Carnatic gamakas that make it sound very different from a plain major scale.",comps:[{t:"Enduku Peddala",by:"Tyagaraja"},{t:"Swara Raga Sudha",by:"Tyagaraja"},{t:"Akshaya Linga Vibho",by:"Muthuswami Dikshitar"}]},
+ 36:{desc:"Parent of Nata, the raga of the first Pancharatna kriti."},
+ 39:{desc:"Parent of Varali, the raga of the fourth Pancharatna kriti."},
+ 45:{desc:"Same notes as Hindustani Todi thaat (Miyan ki Todi).",comps:[{t:"Sri Satyanarayanam",by:"Muthuswami Dikshitar"}]},
+ 51:{aka:["Pantuvarali","Panthuvarali"],desc:"Popularly called Pantuvarali. Same notes as Hindustani Purvi thaat.",comps:[{t:"Shambho Mahadeva",by:"Tyagaraja"}]},
+ 53:{desc:"Same notes as Hindustani Marwa thaat. Parent of Purvikalyani."},
+ 56:{desc:"A popular mela for elaborate alapana and ragam-tanam-pallavi.",comps:[{t:"Siddhi Vinayakam",by:"Muthuswami Dikshitar (in his school's name for it, Chamaram)"}]},
+ 57:{desc:"Same notes as the Hungarian minor scale and maqam Nawa Athar.",comps:[{t:"Rama Rama Guna Seema",by:"Swati Tirunal"}]},
+ 58:{desc:"Same notes as the Ukrainian Dorian scale and maqam Nikriz.",comps:[{t:"Sri Kantimatim",by:"Muthuswami Dikshitar"}]},
+ 59:{desc:"Same notes as Hindustani Madhuvanti."},
+ 64:{desc:"Same notes as the Western Lydian dominant (acoustic) scale.",comps:[{t:"Kanta Joodumi",by:"Tyagaraja"}]},
+ 65:{aka:["Kalyani","Kalyan"],coined:"Traditional; 'Mechakalyani' is its melakarta name.",origin:"One of the major ragas of the repertoire. It shares its notes with Hindustani Yaman/Kalyan, and is the only commonly used raga family with the raised madhyamam (M2) at its core.",desc:"Bright and grand. Same notes as the Western Lydian mode and Hindustani Kalyan thaat. Often among the first varnams a student learns (Vanajakshi).",comps:[{t:"Nidhi Chala Sukhama",by:"Tyagaraja"},{t:"Etavunara",by:"Tyagaraja"},{t:"Kamalambam Bhajare",by:"Muthuswami Dikshitar"}]},
+ 72:{desc:"The last of the 72 melakartas."}
+};
+
+/* ---------------- data: Carnatic janyas ---------------- */
+const JANYA=[
+ {n:"Mohanam",aka:["Mohana"],p:28,aro:"S R2 G3 P D2 S'",ava:"S' D2 P G3 R2 S",origin:"An ancient pentatonic raga, found in some form across Asia. Hindustani Bhupali is its counterpart.",coined:"Traditional",desc:"Five notes, no semitones. Bright and versatile, used for everything from varnams to light music. Rotating its Sa gives Madhyamavati, Hindolam and Shuddha Saveri.",comps:[{t:"Nannu Palimpa",by:"Tyagaraja"},{t:"Ninnukori (varnam)",by:"Ramanathapuram Srinivasa Iyengar"}]},
+ {n:"Hamsadhwani",aka:["Hansadhwani"],p:29,aro:"S R2 G3 P N3 S'",ava:"S' N3 P G3 R2 S",origin:"Created in the 18th century in the Carnatic tradition and later adopted into Hindustani music.",coined:"Ramaswamy Dikshitar (1735–1817), father of Muthuswami Dikshitar, is credited with creating it.",desc:"Joyful and auspicious, often used for the opening Ganapati piece of a concert.",comps:[{t:"Vatapi Ganapatim",by:"Muthuswami Dikshitar"},{t:"Raghunayaka",by:"Tyagaraja"}]},
+ {n:"Hindolam",aka:["Hindola"],p:20,aro:"S G2 M1 D1 N2 S'",ava:"S' N2 D1 M1 G2 S",origin:"An ancient pentatonic raga with the same notes as Hindustani Malkauns. It is not the same as the Hindustani raga Hindol, which uses a raised Ma.",coined:"Traditional",desc:"Deep and meditative; no Ri or Pa. Suited to slow, weighty phrases.",comps:[{t:"Samaja Vara Gamana",by:"Tyagaraja"},{t:"Neerajakshi Kamakshi",by:"Muthuswami Dikshitar"}]},
+ {n:"Abhogi",p:22,aro:"S R2 G2 M1 D2 S'",ava:"S' D2 M1 G2 R2 S",origin:"A Carnatic raga that passed into Hindustani music as Abhogi Kanada.",coined:"Traditional",desc:"Pentatonic without Pa or Ni; gentle and devotional.",comps:[{t:"Manasu Nilpa",by:"Tyagaraja"},{t:"Sabhapathikku",by:"Gopalakrishna Bharati"}]},
+ {n:"Madhyamavati",p:22,aro:"S R2 M1 P N2 S'",ava:"S' N2 P M1 R2 S",origin:"An old pentatonic raga considered auspicious; concerts traditionally close with a piece in Madhyamavati.",coined:"Traditional",desc:"Five notes and no Ga or Dha. Hindustani Madhumad Sarang uses the same notes.",comps:[{t:"Rama Katha Sudha",by:"Tyagaraja"},{t:"Palinchu Kamakshi",by:"Syama Sastri"}]},
+ {n:"Shuddha Saveri",aka:["Suddha Saveri"],p:29,aro:"S R2 M1 P D2 S'",ava:"S' D2 P M1 R2 S",origin:"A pentatonic raga shared with Hindustani Durga.",coined:"Traditional",desc:"Bright and open, with no Ga or Ni.",comps:[{t:"Darini Telusukonti",by:"Tyagaraja"}]},
+ {n:"Revati",aka:["Revathi"],p:2,aro:"S R1 M1 P N2 S'",ava:"S' N2 P M1 R1 S",origin:"Shares its notes with Hindustani Bairagi (Bairagi Bhairav).",coined:"Traditional",desc:"Austere and devotional, with the low R1 giving it a Vedic, chant-like colour.",comps:[{t:"Bho Shambho",by:"Swami Dayananda Saraswati"}]},
+ {n:"Bhairavi",aka:["Carnatic Bhairavi"],p:20,aro:"S G2 R2 G2 M1 P D2 N2 S'",ava:"S' N2 D1 P M1 G2 R2 S",origin:"A very old raga and a cornerstone of the repertoire. It differs from Hindustani Bhairavi, which uses komal Re.",coined:"Traditional",desc:"A bhashanga raga: D2 in ascent, D1 in descent, so it does not sit inside any single melakarta.",comps:[{t:"Viriboni (ata tala varnam)",by:"Pacchimiriam Adiyappa"},{t:"Kamakshi (swarajati)",by:"Syama Sastri"}]},
+ {n:"Kambhoji",aka:["Kamboji"],p:28,aro:"S R2 G3 M1 P D2 S'",ava:"S' N2 D2 P M1 G3 R2 S",origin:"An ancient raga of major stature in Carnatic concerts; an anya swara N3 appears in certain phrases.",coined:"Traditional",desc:"Majestic and spacious, a favourite for the main piece of a concert.",comps:[{t:"Sri Subrahmanyaya Namaste",by:"Muthuswami Dikshitar"},{t:"O Rangasayee",by:"Tyagaraja"}]},
+ {n:"Sriranjani",p:22,aro:"S R2 G2 M1 D2 N2 S'",ava:"S' N2 D2 M1 G2 R2 S",origin:"Close to Hindustani Bageshri, which adds Pa in descent.",coined:"Traditional",desc:"A light, lilting raga without Pa.",comps:[{t:"Sogasuga Mridanga Talamu",by:"Tyagaraja"},{t:"Bhuvini Dasudane",by:"Tyagaraja"}]},
+ {n:"Nata",aka:["Natai"],p:36,aro:"S R3 G3 M1 P N3 S'",ava:"S' N3 P M1 R3 S",origin:"An old, vigorous raga often used to open concerts.",coined:"Traditional",desc:"Its R3 (enharmonically a raised second) gives a striking, bold colour.",comps:[{t:"Jagadananda Karaka (1st Pancharatna)",by:"Tyagaraja"},{t:"Mahaganapatim",by:"Muthuswami Dikshitar"}]},
+ {n:"Gaula",aka:["Gowla"],p:15,aro:"S R1 M1 P N3 S'",ava:"S' N3 P M1 R1 G3 M1 R1 S",origin:"One of the five ghana ragas of Carnatic music.",coined:"Traditional",desc:"Grave and stately; the oscillated R1 is its identity.",comps:[{t:"Dudukugala (2nd Pancharatna)",by:"Tyagaraja"}]},
+ {n:"Arabhi",aka:["Arabi"],p:29,aro:"S R2 M1 P D2 S'",ava:"S' N3 D2 P M1 G3 R2 S",origin:"One of the five ghana ragas.",coined:"Traditional",desc:"Brisk and energetic; pentatonic ascent, full descent.",comps:[{t:"Sadhinchane (3rd Pancharatna)",by:"Tyagaraja"}]},
+ {n:"Varali",p:39,aro:"S G1 R1 G1 M2 P D1 N3 S'",ava:"S' N3 D1 P M2 G1 R1 S",origin:"One of the five ghana ragas. By an old custom, teachers avoid teaching Varali face to face.",coined:"Traditional",desc:"Uses the rare G1 (a whole tone above Sa), which gives it a tense, solemn colour.",comps:[{t:"Kanakana Ruchira (4th Pancharatna)",by:"Tyagaraja"}]},
+ {n:"Sri",aka:["Sree","Shree"],p:22,aro:"S R2 M1 P N2 S'",ava:"S' N2 P D2 N2 P M1 R2 G2 R2 S",origin:"One of the five ghana ragas and one of the oldest raga names in South Indian music. Distinct from Hindustani Shree.",coined:"Traditional",desc:"Auspicious and weighty, with zigzag (vakra) descent.",comps:[{t:"Endaro Mahanubhavulu (5th Pancharatna)",by:"Tyagaraja"}]},
+ {n:"Bilahari",p:29,aro:"S R2 G3 P D2 S'",ava:"S' N3 D2 P M1 G3 R2 S",origin:"A popular janya of Sankarabharanam, pentatonic going up.",coined:"Traditional",desc:"Cheerful and bright, often sung in the morning.",comps:[{t:"Naa Jeevadhara",by:"Tyagaraja"},{t:"Sri Balasubrahmanya",by:"Muthuswami Dikshitar"}]},
+ {n:"Saveri",p:15,aro:"S R1 M1 P D1 S'",ava:"S' N3 D1 P M1 G3 R1 S",origin:"An old raga of the Mayamalavagowla family.",coined:"Traditional",desc:"Grave and karuna (compassionate) in mood.",comps:[{t:"Sankari Sankuru",by:"Syama Sastri"},{t:"Sri Rajagopala",by:"Muthuswami Dikshitar"}]},
+ {n:"Purvikalyani",aka:["Poorvikalyani","Gamakakriya"],p:53,aro:"S R1 G3 M2 P D2 P S'",ava:"S' N3 D2 P M2 G3 R1 S",origin:"Muthuswami Dikshitar's school calls it Gamakakriya.",coined:"Traditional",desc:"Evening raga with a yearning quality; related to Hindustani Puriya Kalyan.",comps:[{t:"Meenakshi Me Mudam Dehi",by:"Muthuswami Dikshitar"},{t:"Gnanamosagarada",by:"Tyagaraja"}]}
+];
+
+/* ---------------- data: Hindustani ---------------- */
+const THAAT_ORIGIN="Vishnu Narayan Bhatkhande grouped Hindustani ragas under ten parent scales (thaats) in the early 20th century, inspired by the Carnatic melakarta idea. Each thaat is named after a prominent raga.";
+const THAATS=[
+ {n:"Bilawal",scale:"S R G m P D N S'",desc:"All shuddha swaras. Same notes as the Western major scale and Carnatic Dheerasankarabharanam."},
+ {n:"Kalyan",scale:"S R G M P D N S'",desc:"Tivra Ma. Same notes as the Western Lydian mode and Carnatic Mechakalyani."},
+ {n:"Khamaj",scale:"S R G m P D n S'",desc:"Komal Ni. Same notes as the Western Mixolydian mode and Carnatic Harikambhoji."},
+ {n:"Kafi",scale:"S R g m P D n S'",desc:"Komal Ga and Ni. Same notes as the Western Dorian mode and Carnatic Kharaharapriya."},
+ {n:"Asavari",scale:"S R g m P d n S'",desc:"Komal Ga, Dha and Ni. Same notes as the Western natural minor and Carnatic Natabhairavi."},
+ {n:"Bhairavi",scale:"S r g m P d n S'",desc:"All four movable notes komal. Same notes as the Western Phrygian mode and Carnatic Hanumatodi."},
+ {n:"Bhairav",scale:"S r G m P d N S'",desc:"Komal Re and Dha. Same notes as Carnatic Mayamalavagowla and maqam Hijaz Kar."},
+ {n:"Poorvi",aka:["Purvi"],scale:"S r G M P d N S'",desc:"Komal Re and Dha with tivra Ma. Same notes as Carnatic Kamavardhini (Pantuvarali)."},
+ {n:"Marwa",scale:"S r G M P D N S'",desc:"Komal Re with tivra Ma. Same notes as Carnatic Gamanashrama."},
+ {n:"Todi",scale:"S r g M P d N S'",desc:"Komal Re, Ga and Dha with tivra Ma. Same notes as Carnatic Shubhapantuvarali."}
+];
+const HR=[
+ {n:"Yaman",aka:["Iman","Kalyan","Yaman Kalyan"],th:"Kalyan",aro:".N R G M D N S'",ava:"S' N D P M G R S",time:"First quarter of the night",mood:"Serene, devotional",origin:"Among the oldest names in the north Indian repertoire; Mughal-era sources call it Iman or Yaman. A popular tradition credits Amir Khusrau, though this is not proven.",coined:"Traditional (popularly, but doubtfully, attributed to Amir Khusrau)",desc:"Usually the first raga a Hindustani student learns. Phrases often start from lower Ni and skip Sa going up.",comps:[{t:"Eri Aali Piya Bina",by:"Traditional chhota khayal bandish"},{t:"Jab Deep Jale Aana",by:"Chitchor (1976), music by Ravindra Jain"}]},
+ {n:"Bhupali",aka:["Bhoopali","Bhoop"],th:"Kalyan",aro:"S R G P D S'",ava:"S' D P G R S",time:"First quarter of the night",mood:"Calm, joyful",origin:"An ancient pentatonic raga; the north Indian counterpart of Carnatic Mohanam.",coined:"Traditional",desc:"Five notes with Ga and Dha as the main resting points.",comps:[{t:"Jyoti Kalash Chhalke",by:"Bhabhi Ki Chudiyan (1961), music by Sudhir Phadke"}]},
+ {n:"Bhairav",th:"Bhairav",aro:"S r G m P d N S'",ava:"S' N d P m G r S",time:"Dawn",mood:"Grave, devotional",origin:"Named after Shiva as Bhairava, it is counted among the oldest ragas and heads Bhatkhande's Bhairav thaat.",coined:"Traditional",desc:"Komal Re and komal Dha are sung with a slow oscillation (andolan).",comps:[{t:"Mohe Bhool Gaye Sanwariya",by:"Baiju Bawra (1952), music by Naushad"}]},
+ {n:"Ahir Bhairav",th:"Bhairav",aro:"S r G m P D n S'",ava:"S' n D P m G r S",time:"Early morning",mood:"Tender, devotional",origin:"A blend of Bhairav with Ahiri, a folk raga linked with the Ahir pastoral community.",coined:"Traditional",desc:"Bhairav's lower half with Kafi's upper half. Same notes as Carnatic Chakravakam.",comps:[{t:"Albela Sajan Aayo Ri",by:"Traditional bandish"},{t:"Poochho Na Kaise Maine Rain Bitaayi",by:"Meri Surat Teri Aankhen (1963), music by S. D. Burman"}]},
+ {n:"Bhairavi",aka:["Hindustani Bhairavi"],th:"Bhairavi",aro:"S r g m P d n S'",ava:"S' n d P m g r S",time:"Morning; also the customary closing piece of a concert",mood:"Devotional, poignant",origin:"An old raga central to thumri, bhajan and light classical music. Different from Carnatic Bhairavi.",coined:"Traditional",desc:"In practice singers freely touch other swaras, which is why Bhairavi is the usual choice for the last item of a recital.",comps:[{t:"Babul Mora Naihar Chhooto Hi Jaye",by:"Thumri attributed to Wajid Ali Shah; sung by K. L. Saigal in Street Singer (1938)"}]},
+ {n:"Malkauns",aka:["Malkosh","Malkaush"],th:"Bhairavi",aro:"S g m d n S'",ava:"S' n d m g S",time:"Late night",mood:"Deep, meditative",origin:"An ancient raga (from Malav-Kaushik), associated in legend with Shiva.",coined:"Traditional",desc:"Pentatonic without Re or Pa; Ma is the centre of gravity. Same notes as Carnatic Hindolam.",comps:[{t:"Man Tadpat Hari Darshan Ko Aaj",by:"Baiju Bawra (1952), music by Naushad"}]},
+ {n:"Darbari Kanada",aka:["Darbari"],th:"Asavari",aro:"S R g m P d n S'",ava:"S' d n P m P g m R S",time:"Midnight",mood:"Grave, majestic",origin:"Takes its name from the darbar (royal court) of Akbar.",coined:"Attributed to Tansen",desc:"A slow, wide andolan on komal Ga and komal Dha marks it out from Asavari ragas with the same notes.",comps:[{t:"O Duniya Ke Rakhwale",by:"Baiju Bawra (1952), music by Naushad"}]},
+ {n:"Miyan ki Todi",aka:["Todi","Shuddha Todi"],th:"Todi",aro:"S r g M d N S'",ava:"S' N d P M g r S",time:"Late morning",mood:"Pathos, longing",origin:"'Miyan' refers to Tansen, to whom this form of Todi is credited.",coined:"Attributed to Tansen",desc:"Pa is barely touched. Same notes as Carnatic Shubhapantuvarali, not Carnatic Todi."},
+ {n:"Desh",aka:["Des"],th:"Khamaj",aro:"S R m P N S'",ava:"S' n D P m G R S",time:"Night; also a monsoon raga",mood:"Romantic, pastoral",origin:"A folk-rooted raga associated with the rains.",coined:"Traditional",desc:"Shuddha Ni going up, komal Ni coming down.",comps:[{t:"Vande Mataram",by:"Widely sung to a tune in Raga Desh"}]},
+ {n:"Bageshri",aka:["Bageshree","Bagesri"],th:"Kafi",aro:"S g m D n S'",ava:"S' n D m P D g m g R S",time:"Late night",mood:"Longing (viraha)",origin:"A Kafi-thaat raga with a long khayal tradition.",coined:"Traditional",desc:"Pa is used sparingly and only in descent. Close to Carnatic Sriranjani."},
+ {n:"Marwa",aka:["Marva"],th:"Marwa",aro:"S r G M D N S'",ava:"S' N D M G r S",time:"Sunset",mood:"Restless, unresolved",origin:"Heads Bhatkhande's Marwa thaat.",coined:"Traditional",desc:"Pa is omitted, and Sa is sung rarely, which gives the raga its unsettled quality."},
+ {n:"Puriya Dhanashree",aka:["Puriya Dhanashri"],th:"Poorvi",aro:".N r G M P d N S'",ava:"S' N d P M G M r G r S",time:"Sunset",mood:"Devotional, yearning",origin:"Combines features of Puriya and Dhanashree.",coined:"Traditional",desc:"Same notes as Carnatic Kamavardhini (Pantuvarali)."},
+ {n:"Hansadhwani",aka:["Hamsadhwani"],th:"Bilawal",aro:"S R G P N S'",ava:"S' N P G R S",time:"Evening",mood:"Joyful",origin:"Borrowed from Carnatic Hamsadhwani in the 20th century.",coined:"Created in the Carnatic tradition (credited to Ramaswamy Dikshitar)",desc:"Pentatonic with no Ma or Dha.",comps:[{t:"Lagi Lagan Pati Sakhi Sang",by:"Bandish attributed to Aman Ali Khan (Bhendibazaar gharana)"}]},
+ {n:"Durga",th:"Bilawal",aro:"S R m P D S'",ava:"S' D P m R S",time:"Night",mood:"Bright, devotional",origin:"A pentatonic raga with the same notes as Carnatic Shuddha Saveri.",coined:"Traditional",desc:"No Ga or Ni."},
+ {n:"Kirwani",aka:["Kirvani"],th:"—",aro:"S R g m P d N S'",ava:"S' N d P m g R S",time:"Night",mood:"Pathos",origin:"Borrowed from Carnatic Keeravani in the 20th century; it falls outside Bhatkhande's ten thaats.",coined:"From the Carnatic tradition",desc:"Same notes as the Western harmonic minor."},
+ {n:"Charukeshi",aka:["Charukesi"],th:"—",aro:"S R G m P d n S'",ava:"S' n d P m G R S",mood:"Tender, plaintive",origin:"Borrowed from Carnatic Charukesi in the 20th century.",coined:"From the Carnatic tradition",desc:"Major-sounding lower half, minor-sounding upper half."},
+ {n:"Madhuvanti",th:"—",aro:".N S g M P N S'",ava:"S' N D P M g R S",time:"Late afternoon",mood:"Sweet, romantic",origin:"A comparatively recent raga; its creator is not reliably documented.",coined:"Not reliably documented",desc:"Komal Ga with tivra Ma. Same notes as Carnatic Dharmavati."}
+];
+
+/* ---------------- data: Arabic maqamat (semitones; .5 = quarter tone) ---------------- */
+const ARAB_COINED="Traditional. Maqam theory was systematised by al-Farabi (10th c.) and Safi al-Din al-Urmawi (13th c.); a 24-quarter-tone framework was debated at the 1932 Cairo Congress of Arab Music.";
+const AR=[
+ {n:"Rast",ar:"راست",fam:"Rast",aro:[0,2,3.5,5,7,9,10.5,12],ava:[12,10,9,7,5,3.5,2,0],origin:"From Persian rast, 'straight' or 'right'. Regarded as the head of the maqam system.",desc:"Third and seventh are half-flat. The descent usually lowers the seventh to B♭, borrowing from Nahawand on the fifth.",mood:"Pride, stability"},
+ {n:"Bayati",ar:"بياتي",fam:"Bayati",aro:[0,1.5,3,5,7,8,10,12],origin:"The name is commonly linked to the Bayat, a Turkic tribe.",desc:"Half-flat second. The most common maqam for Qur'anic recitation and the call to prayer.",mood:"Warm, devotional",comps:[{t:"The adhan (call to prayer)",by:"Most often chanted in Bayati"}]},
+ {n:"Saba",ar:"صبا",fam:"Saba",aro:[0,1.5,3,4,7,8,10,11],ava:[11,10,8,7,4,3,1.5,0],origin:"Saba is the Arabic name of the east (morning) wind.",desc:"Half-flat second and a flattened fourth (G♭ on D). The scale does not close at the octave: it reaches D♭ instead.",mood:"Sorrow, lament"},
+ {n:"Hijaz",ar:"حجاز",fam:"Hijaz",aro:[0,1,4,5,7,8,10,12],origin:"Named after the Hejaz region of western Arabia.",desc:"The augmented second between the second and third degrees gives it a sound often heard as 'eastern'. Same notes as Carnatic Vakulabharanam and the Phrygian dominant / klezmer Freygish scale.",mood:"Longing, distance",comps:[{t:"Hava Nagila",by:"Set in the Ahava Rabbah (Freygish) mode, the same scale as Hijaz"}]},
+ {n:"Hijaz Kar",ar:"حجاز كار",fam:"Hijaz",aro:[0,1,4,5,7,8,11,12],origin:"A Hijaz-family maqam built on the Rast tonic (C).",desc:"Two Hijaz tetrachords. Same notes as Carnatic Mayamalavagowla, Hindustani Bhairav and the Western double harmonic scale.",comps:[{t:"Misirlou",by:"Traditional eastern Mediterranean song; Dick Dale's surf version (1962)"}]},
+ {n:"Kurd",ar:"كرد",fam:"Kurd",aro:[0,1,3,5,7,8,10,12],origin:"Named after the Kurdish people.",desc:"Fully 12-tone. Same notes as the Western Phrygian mode, Hindustani Bhairavi thaat and Carnatic Hanumatodi.",comps:[{t:"Enta Omri",by:"Mohammed Abdel Wahab for Umm Kulthum (1964); its opening sections are in Kurd"}]},
+ {n:"Nahawand",ar:"نهاوند",fam:"Nahawand",aro:[0,2,3,5,7,8,11,12],ava:[12,10,8,7,5,3,2,0],origin:"Named after the city of Nahavand in western Iran.",desc:"Rises as harmonic minor, usually falls as natural minor.",comps:[{t:"Lamma Bada Yatathanna",by:"Andalusian muwashshah"}]},
+ {n:"Ajam",ar:"عجم",fam:"Ajam",aro:[0,2,4,5,7,9,11,12],origin:"Ajam is the Arabic word for Persians or non-Arabs.",desc:"The Western major scale within the maqam system."},
+ {n:"Nikriz",ar:"نكريز",fam:"",aro:[0,2,3,6,7,9,10,12],origin:"A name of Persian origin.",desc:"Raised fourth over a minor third. Same notes as the Ukrainian Dorian scale and Carnatic Hemavati."},
+ {n:"Nawa Athar",ar:"نوى أثر",fam:"Nawa Athar",aro:[0,2,3,6,7,8,11,12],origin:"Nawa is the Arabic name of the note G in traditional theory.",desc:"Same notes as the Hungarian minor scale and Carnatic Simhendramadhyamam."}
+];
+
+/* ---------------- data: Western ---------------- */
+const GLAREAN="Named by Heinrich Glarean in Dodecachordon (1547).";
+const CHURCH="Medieval church-mode theory (c. 9th–10th c.), which borrowed ancient Greek names; the medieval and Greek meanings differ.";
+const WE=[
+ {n:"Major (Ionian)",aka:["Ionian","Major scale"],kind:"Diatonic mode 1",aro:[0,2,4,5,7,9,11,12],coined:GLAREAN,origin:"Major-key tonality dominates Western music from the Baroque period onward.",desc:"The reference scale of Western music.",comps:[{t:"Ode to Joy",by:"Beethoven, Symphony No. 9 (1824)"}]},
+ {n:"Dorian",kind:"Diatonic mode 2",aro:[0,2,3,5,7,9,10,12],coined:CHURCH,origin:"First of the medieval church modes; widely used in folk music and modal jazz.",desc:"Minor with a raised sixth.",comps:[{t:"Scarborough Fair",by:"Traditional English ballad"},{t:"So What",by:"Miles Davis, Kind of Blue (1959)"}]},
+ {n:"Phrygian",kind:"Diatonic mode 3",aro:[0,1,3,5,7,8,10,12],coined:CHURCH,origin:"A medieval church mode; common in Spanish and metal idioms.",desc:"Minor with a lowered second."},
+ {n:"Lydian",kind:"Diatonic mode 4",aro:[0,2,4,6,7,9,11,12],coined:CHURCH,origin:"A medieval church mode; prized in film music for its floating sound.",desc:"Major with a raised fourth."},
+ {n:"Mixolydian",kind:"Diatonic mode 5",aro:[0,2,4,5,7,9,10,12],coined:CHURCH,origin:"A medieval church mode; the basis of much rock and folk.",desc:"Major with a lowered seventh.",comps:[{t:"Norwegian Wood",by:"The Beatles (1965)"}]},
+ {n:"Natural minor (Aeolian)",aka:["Aeolian","Minor scale"],kind:"Diatonic mode 6",aro:[0,2,3,5,7,8,10,12],coined:GLAREAN,origin:"The basis of minor-key music.",desc:"Lowered third, sixth and seventh.",comps:[{t:"All Along the Watchtower",by:"Bob Dylan (1967)"}]},
+ {n:"Locrian",kind:"Diatonic mode 7",aro:[0,1,3,5,6,8,10,12],coined:"Named in theory after Glarean; rarely used as a home key.",origin:"Mostly theoretical because its fifth is diminished.",desc:"The only diatonic mode without a perfect fifth over its tonic."},
+ {n:"Harmonic minor",kind:"Minor scale",aro:[0,2,3,5,7,8,11,12],coined:"Common-practice harmony (17th–19th c.)",origin:"Raising the seventh of natural minor gives a leading tone for the dominant chord.",desc:"The augmented second between the sixth and seventh gives a distinctive colour."},
+ {n:"Melodic minor",aka:["Jazz minor"],kind:"Minor scale",aro:[0,2,3,5,7,9,11,12],coined:"Common-practice era; 'jazz minor' when used both ways",origin:"Classical practice raises the sixth and seventh going up and descends as natural minor; jazz keeps the raised form both ways (shown here).",desc:"Minor third with a major upper half."},
+ {n:"Major pentatonic",kind:"Pentatonic",aro:[0,2,4,7,9,12],coined:"Traditional; found worldwide",origin:"One of the most widespread scales on earth, from Chinese gong mode to Scottish and African folk song.",desc:"Five notes, no semitones.",comps:[{t:"Amazing Grace",by:"Hymn tune New Britain"}]},
+ {n:"Minor pentatonic",kind:"Pentatonic",aro:[0,3,5,7,10,12],coined:"Traditional; found worldwide",origin:"Central to blues and rock improvisation.",desc:"A rotation of the major pentatonic."},
+ {n:"Blues scale",kind:"Hexatonic",aro:[0,3,5,6,7,10,12],coined:"African-American blues tradition, early 20th c.",origin:"Minor pentatonic plus the flattened fifth 'blue note'.",desc:"The flattened fifth is used as a passing colour."},
+ {n:"Whole tone",kind:"Symmetric",aro:[0,2,4,6,8,10,12],coined:"Late 19th–early 20th c. (Glinka, Debussy)",origin:"Popularised by the French Impressionists.",desc:"Six notes, all a whole tone apart; there is no sense of a home note.",comps:[{t:"Voiles",by:"Debussy, Préludes Book I (1910)"}]},
+ {n:"Phrygian dominant",aka:["Spanish Phrygian","Freygish"],kind:"Mode of harmonic minor",aro:[0,1,4,5,7,8,10,12],coined:"Fifth mode of harmonic minor",origin:"Heard in flamenco, klezmer (Freygish) and Middle Eastern music (Hijaz).",desc:"Phrygian with a major third.",comps:[{t:"Hava Nagila",by:"Traditional"}]},
+ {n:"Double harmonic",aka:["Byzantine scale","Arabic scale"],kind:"Exotic scale",aro:[0,1,4,5,7,8,11,12],coined:"Western name for a scale long used in the Middle East and India",origin:"Two identical tetrachords, each with an augmented second.",desc:"Same notes as Carnatic Mayamalavagowla, Hindustani Bhairav and maqam Hijaz Kar.",comps:[{t:"Misirlou",by:"Dick Dale (1962)"}]},
+ {n:"Hungarian minor",aka:["Gypsy minor"],kind:"Exotic scale",aro:[0,2,3,6,7,8,11,12],coined:"Name used in 19th-century European music (Liszt)",origin:"Associated with Romani and Hungarian styles.",desc:"Harmonic minor with a raised fourth."},
+ {n:"Lydian dominant",aka:["Acoustic scale","Overtone scale"],kind:"Mode of melodic minor",aro:[0,2,4,6,7,9,10,12],coined:"Fourth mode of melodic minor",origin:"Close to the natural overtone series; common in jazz.",desc:"Lydian with a lowered seventh.",comps:[{t:"The Simpsons theme",by:"Danny Elfman (1989)"}]},
+ {n:"Ukrainian Dorian",aka:["Mi Sheberach","Romanian minor"],kind:"Mode of harmonic minor",aro:[0,2,3,6,7,9,10,12],coined:"Fourth mode of harmonic minor",origin:"Used in Jewish and Eastern European folk music.",desc:"Dorian with a raised fourth."}
+];
+
+/* ---------------- build index ---------------- */
+const slug=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+function parseTok(t,map){let o=0;if(t[0]==="."){o=-1;t=t.slice(1)}if(t.endsWith("'")){o=1;t=t.slice(0,-1)}const b=map[t];if(b===undefined)throw new Error("bad token "+t);return {v:b+12*o,b:t,o}}
+function numTok(v){return {v,o:v>=12?1:v<0?-1:0}}
+function pcOf(v){return ((v%12)+12)%12}
+function mkSet(toks){return [...new Set(toks.map(t=>pcOf(t.v)))].sort((a,b)=>a-b)}
+const R=[];
+for(let n=1;n<=72;n++){
+  const i=n-1, m=i<36?"M1":"M2", c=Math.floor((i%36)/6), p=i%6;
+  const aro=["S",RG[c][0],RG[c][1],m,"P",DN[p][0],DN[p][1],"S'"].join(" ");
+  const x=MX[n]||{};
+  R.push({sys:"C",name:MELA[n-1],mela:n,chakra:CHAKRA[Math.floor(i/6)],aka:x.aka||[],aroS:aro,avaS:aro.split(" ").reverse().join(" "),
+    kind:`Melakarta ${n} · ${CHAKRA[Math.floor(i/6)]} chakra`,origin:x.origin?x.origin+" "+MELA_ORIGIN:MELA_ORIGIN,coined:x.coined||MELA_COINED,
+    desc:(x.desc?x.desc+" ":"")+`A sampurna melakarta: all seven swaras in straight order up and down, with ${m==="M1"?"shuddha madhyamam (M1)":"prati madhyamam (M2)"}.`,
+    comps:x.comps||MELA_COMPS, compsGeneric:!x.comps});
+}
+JANYA.forEach(j=>R.push({sys:"C",name:j.n,aka:j.aka||[],aroS:j.aro,avaS:j.ava,parentMela:j.p,kind:`Janya of ${MELA[j.p-1]} (${j.p})`,origin:j.origin,coined:j.coined,desc:j.desc,comps:j.comps||[]}));
+THAATS.forEach(t=>R.push({sys:"H",name:t.n+" thaat",aka:t.aka?t.aka.map(a=>a+" thaat"):[],thaatName:t.n,isThaat:true,aroS:t.scale,avaS:t.scale.split(" ").reverse().join(" "),kind:"Thaat · parent scale",origin:THAAT_ORIGIN,coined:"Vishnu Narayan Bhatkhande (1860–1936)",desc:t.desc,comps:[]}));
+HR.forEach(h=>R.push({sys:"H",name:h.n,aka:h.aka||[],th:h.th,aroS:h.aro,avaS:h.ava,kind:h.th&&h.th!=="—"?`${h.th} thaat`:"Outside the ten thaats",time:h.time,mood:h.mood,origin:h.origin,coined:h.coined,desc:h.desc,comps:h.comps||[]}));
+AR.forEach(a=>R.push({sys:"A",name:a.n,ar:a.ar,aka:[],aroN:a.aro,avaN:a.ava||[...a.aro].reverse(),kind:a.fam?`Maqam · ${a.fam} family`:"Maqam",origin:a.origin,coined:ARAB_COINED,desc:a.desc,mood:a.mood,comps:a.comps||[]}));
+WE.forEach(w=>R.push({sys:"W",name:w.n,aka:w.aka||[],aroN:w.aro,avaN:w.ava||[...w.aro].reverse(),kind:w.kind,origin:w.origin,coined:w.coined,desc:w.desc,comps:w.comps||[]}));
+
+R.forEach(r=>{
+  if(r.aroS){const map=r.sys==="C"?CARN:HIND;r.aro=r.aroS.split(" ").map(t=>parseTok(t,map));r.ava=r.avaS.split(" ").map(t=>parseTok(t,map))}
+  else{r.aro=r.aroN.map(numTok);r.ava=r.avaN.map(numTok)}
+  r.set=mkSet([...r.aro,...r.ava]);
+  r.micro=r.set.some(v=>v%1!==0);
+  r.key=r.micro?null:r.set.join(",");
+  r.id=r.sys.toLowerCase()+"-"+slug(r.name);
+  // native names per pitch-class
+  r.pcName={};
+  [...r.aro,...r.ava].forEach(t=>{const pc=pcOf(t.v);if(t.b&&!(pc in r.pcName))r.pcName[pc]=t.b});
+});
+const BYID=Object.fromEntries(R.map(r=>[r.id,r]));
+const BYSET=new Map();R.forEach(r=>{if(!r.key)return;if(!BYSET.has(r.key))BYSET.set(r.key,[]);BYSET.get(r.key).push(r)});
+const MELA_BY_N=Object.fromEntries(R.filter(r=>r.mela).map(r=>[r.mela,r]));
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const state={sel:"c-mayamalavagowla",tonic:0,tab:"name",q:"",sys:"all",notes:new Set([0]),mode:"exact",lbl:"C"};
+try{const t=localStorage.getItem("ra-tonic");if(t!==null&&TONICS[+t])state.tonic=+t;const l=localStorage.getItem("ra-lbl");if(l)state.lbl=l}catch(e){}
+
+function accStr(a){if(Math.abs(a)<1e-6)return"";const m={"-2":"♭♭","-1":"♭","-0.5":"½♭","-1.5":"♭½♭","1":"♯","2":"♯♯","0.5":"½♯"};return m[String(a)]||""}
+function spellSet(set){ // returns map pc->letter name relative to tonic
+  const [ ,tl]=TONICS[state.tonic], tpc=state.tonic, out={};
+  const seven=set.length===7;
+  set.forEach((pc,i)=>{
+    const deg=seven?i:DEG[Math.ceil(pc)%12];
+    const li=(tl+deg)%7, nat=LP[li];
+    let d=((tpc+pc-nat)%12+12)%12; if(d>6)d-=12;
+    out[pc]=LETTERS[li]+accStr(d);
+  });return out;
+}
+function westName(pc){const s=[0,1,2,3,4,5,6,7,8,9,10,11];return spellSet(s)[pc]}
+function genLabel(pc,style){
+  if(style==="C")return C_GEN[pc]+(C_ALT[pc]?"/"+C_ALT[pc]:"");
+  if(style==="H")return ["Sa","re","Re","ga","Ga","ma","Ma′","Pa","dha","Dha","ni","Ni"][pc];
+  return westName(pc);
+}
+function nativeName(r,pc,spelled){
+  if(r.sys==="C"||r.sys==="H"){const b=r.pcName[pc];if(r.sys==="H"&&b){return HSYL[b]+(b==="M"?"′":"")}return b||(r.sys==="C"?C_GEN[pc]:H_GEN[pc])}
+  return spelled[pc];
+}
+function tokHTML(r,t,spelled,idx){
+  const cls=["tok"];if(t.o>0)cls.push("hi");if(t.o<0)cls.push("lo");
+  let inner;
+  if(r.sys==="C"){const m=t.b.match(/^([A-Z])(\d?)$/);inner=m[1]+(m[2]?`<sub>${m[2]}</sub>`:"")}
+  else if(r.sys==="H"){inner=HSYL[t.b];if("rgdn".includes(t.b))cls.push("k");if(t.b==="M")cls.push("t")}
+  else{inner=spelled[pcOf(t.v)]}
+  return `<span class="${cls.join(" ")}" data-i="${idx}">${esc(inner).replace(/&lt;sub&gt;/g,"<sub>").replace(/&lt;\/sub&gt;/g,"</sub>")}</span>`;
+}
+function dotsHTML(set){let h='<span class="dots" aria-hidden="true">';for(let i=0;i<12;i++){const on=set.some(v=>Math.floor(v)===i||Math.ceil(v)===i&&v%1);h+=`<i class="${on?"on":""}"></i>`}return h+"</span>"}
+function stepsOf(set){const s=[...set,12];const out=[];for(let i=1;i<s.length;i++)out.push(+(s[i]-s[i-1]).toFixed(1));return out}
+
+/* ---------------- piano ---------------- */
+const BLACK=new Set([1,3,6,8,10]);
+function pianoSVG({set,from,to,labels={},clickable=false,activeRange=null,selected=null,id=""}){
+  const WW=32,WH=150,BW=20,BH=94;
+  // snap range to white keys (absolute semitones, 0 = C4)
+  while(BLACK.has(pcOf(from)))from--; while(BLACK.has(pcOf(to)))to++;
+  const whites=[],blacks=[];let wi=0;
+  for(let a=from;a<=to;a++){const p=pcOf(a);if(BLACK.has(p)){blacks.push({a,x:wi*WW-BW/2})}else{whites.push({a,x:wi*WW});wi++}}
+  const W=wi*WW;
+  const rel=a=>a-state.tonic; // relative semitone to Sa
+  const status=a=>{
+    const rv=rel(a), pc=pcOf(rv);
+    const inR=!activeRange||(rv>=activeRange[0]&&rv<=activeRange[1]);
+    let on=false,mi=false;
+    if(selected){on=selected.has(pc)&&inR}
+    else{on=set.includes(pc);mi=set.some(v=>v%1&&(Math.floor(v)===pc||Math.ceil(v)%12===pc))&&!on}
+    return {on,mi,sa:pc===0&&(selected?inR:true),inR,pc,rv};
+  };
+  let g="";
+  const keyG=(k,isB)=>{
+    const s=status(k.a);const c=["k",isB?"b":"w"];if(s.on)c.push("on");if(s.sa)c.push("sa");if(s.mi)c.push("mi");if(clickable&&s.inR&&s.pc!==0)c.push("click");if(activeRange&&!s.inR)c.push("off");
+    const lab=(s.on||s.sa||s.mi)?(labels[s.pc]||""):"";
+    const w=isB?BW:WW,h=isB?BH:WH;
+    let t=`<rect class="${c.join(" ")}" x="${k.x+.5}" y=".5" width="${w-1}" height="${h}" rx="${isB?2:3}" data-abs="${k.a}" data-pc="${s.pc}" data-rv="${s.rv}"${clickable&&s.inR&&s.pc!==0?` role="button" tabindex="0" aria-label="${esc(genLabel(s.pc,state.lbl))}" aria-pressed="${s.on}"`:""}><title>${esc(lab||westName(s.pc))}</title></rect>`;
+    if(lab){t+=`<text class="kl ${s.sa?"saL":isB?"b":"w"}" x="${k.x+w/2}" y="${isB?BH-10:WH-12}">${esc(lab)}</text>`}
+    return t;
+  };
+  whites.forEach(k=>g+=keyG(k,false));blacks.forEach(k=>g+=keyG(k,true));
+  return `<svg ${id?`id="${id}"`:""} viewBox="0 0 ${W+1} ${WH+2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Keyboard with the raga's notes coloured">
+  <defs><pattern id="hatch${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--kw)"/><rect width="3" height="6" fill="var(--kon)"/></pattern></defs>${g.replace(/url\(#hatch\)/g,`url(#hatch${id})`)}</svg>`;
+}
+
+/* ---------------- audio ---------------- */
+let ac=null,master=null,timers=[],voices=[],droneTimer=null;
+function audio(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ac=new C();master=ac.createGain();master.gain.value=.8;master.connect(ac.destination)}if(ac.state==="suspended")ac.resume();return ac}
+const freq=v=>261.6256*Math.pow(2,(state.tonic+v)/12);
+function pluck(f,when,{dur=1.1,peak=.22,type="triangle",cut=2600,drone=false}={}){
+  const a=audio();if(!a)return;const t=a.currentTime+when;
+  const g=a.createGain(),lp=a.createBiquadFilter();lp.type="lowpass";lp.frequency.value=cut;
+  const o1=a.createOscillator(),o2=a.createOscillator(),g2=a.createGain();
+  o1.type=drone?"sawtooth":type;o1.frequency.value=f;o2.type="sine";o2.frequency.value=f*2;g2.gain.value=drone?.15:.28;
+  o1.connect(lp);o2.connect(g2).connect(lp);lp.connect(g).connect(master);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+.012);g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+  o1.start(t);o2.start(t);o1.stop(t+dur+.05);o2.stop(t+dur+.05);
+  if(!drone)voices.push(g);
+}
+function stopPlay(){timers.forEach(clearTimeout);timers=[];voices.forEach(g=>{try{g.gain.cancelScheduledValues(0);g.gain.setTargetAtTime(0,ac.currentTime,.02)}catch(e){}});voices=[];
+  document.querySelectorAll(".lit").forEach(e=>e.classList.remove("lit"));document.querySelectorAll(".iconbtn[data-playing]").forEach(b=>{b.removeAttribute("data-playing");b.innerHTML=PLAY;b.setAttribute("aria-label",b.dataset.label)})}
+const PLAY='<svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg>',STOP='<svg viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8"/></svg>';
+function playSeq(r,which,btn){
+  if(btn&&btn.hasAttribute("data-playing")){stopPlay();return}
+  stopPlay();if(!audio())return;
+  const seq=which==="both"?[...r.aro,...r.ava.slice(1)]:r[which];
+  const gap=.44;
+  if(btn){btn.setAttribute("data-playing","");btn.innerHTML=STOP;btn.setAttribute("aria-label","Stop")}
+  seq.forEach((t,i)=>{
+    pluck(freq(t.v),i*gap+.03);
+    timers.push(setTimeout(()=>{
+      document.querySelectorAll("#mainPiano .lit,.tok.lit").forEach(e=>e.classList.remove("lit"));
+      const abs=state.tonic+Math.floor(t.v);const k=document.querySelector(`#mainPiano rect[data-abs="${abs}"]`);if(k)k.classList.add("lit");
+      const rowSel=which==="both"?(i<r.aro.length?`[data-row="aro"]`:`[data-row="ava"]`):`[data-row="${which}"]`;
+      const ti=which==="both"?(i<r.aro.length?i:i-r.aro.length+1):i;
+      const tk=document.querySelector(`${rowSel} .tok[data-i="${ti}"]`);if(tk)tk.classList.add("lit");
+    },(i*gap+.03)*1000));
+  });
+  timers.push(setTimeout(()=>stopPlay(),(seq.length*gap+.5)*1000));
+}
+function droneNote(r){return r.set.includes(7)?7:r.set.includes(5)?5:r.set.includes(11)?11:12}
+function startDrone(){
+  if(!audio())return;stopDrone();
+  const cycle=()=>{const r=BYID[state.sel];const p=droneNote(r);[p-12,0,0,-12].forEach((v,i)=>pluck(freq(v)/2,i*.62,{dur:2.6,peak:.07,cut:1400,drone:true}))};
+  cycle();droneTimer=setInterval(cycle,2480);
+}
+function stopDrone(){if(droneTimer)clearInterval(droneTimer);droneTimer=null}
+
+/* ---------------- search: name ---------------- */
+function norm(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z]/g,"")
+  .replace(/aa/g,"a").replace(/ee/g,"i").replace(/oo/g,"u").replace(/([tdkgbcps])h/g,"$1").replace(/w/g,"v").replace(/y/g,"i").replace(/z/g,"j").replace(/(.)\1/g,"$1")}
+R.forEach(r=>{r.terms=[r.name,...r.aka].map(norm).flatMap(t=>[t,t.replace(/m$/,""),t.replace(/thaat$|that$/,"")])});
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function scoreName(r,q){let best=0;for(const t of r.terms){if(!t)continue;if(t===q)best=Math.max(best,100);else if(t.startsWith(q))best=Math.max(best,80-(t.length-q.length)*.1);else if(t.includes(q))best=Math.max(best,60);else if(q.length>=4){const pre=t.slice(0,q.length);const e=lev(q,pre);if(e<=(q.length>6?2:1))best=Math.max(best,40-e*5)}}return best}
+function sysOk(r){return state.sys==="all"||r.sys===state.sys}
+function itemHTML(r,sub){return `<li><button class="sys-${r.sys}" data-id="${r.id}" ${r.id===state.sel?'aria-current="true"':""}><span class="bar"></span><span style="min-width:0"><span class="nm">${esc(r.name)}</span><span class="sub">${esc(sub||r.kind)}</span></span>${dotsHTML(r.set)}</button></li>`}
+function renderNameList(){
+  const q=norm(state.q);let h="",n=0;
+  if(!q){
+    ORDER.filter(s=>state.sys==="all"||state.sys===s).forEach(s=>{
+      let rs=R.filter(r=>r.sys===s);
+      if(s==="C"){const famous=rs.filter(r=>r.mela?MX[r.mela]&&MX[r.mela].comps:true).sort((a,b)=>a.name.localeCompare(b.name));const melas=rs.filter(r=>r.mela);
+        h+=`<li class="grp">Carnatic · popular</li>`+famous.map(r=>itemHTML(r)).join("");h+=`<li class="grp">Carnatic · all 72 melakartas</li>`+melas.map(r=>itemHTML(r,`${r.mela} · ${r.chakra} chakra`)).join("");n+=famous.length+melas.length}
+      else{if(s==="H")rs=[...rs.filter(r=>!r.isThaat).sort((a,b)=>a.name.localeCompare(b.name)),...rs.filter(r=>r.isThaat)];
+        h+=`<li class="grp">${SYSN[s]}</li>`+rs.map(r=>itemHTML(r)).join("");n+=rs.length}
+    });
+    $("#qcount").textContent=`${R.length} ragas, maqamat and scales`;
+  }else{
+    const res=R.filter(sysOk).map(r=>({r,s:scoreName(r,q)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||ORDER.indexOf(a.r.sys)-ORDER.indexOf(b.r.sys));
+    n=res.length;h=res.map(x=>itemHTML(x.r,SYSN[x.r.sys]+" · "+x.r.kind)).join("");
+    $("#qcount").textContent=n?`${n} match${n>1?"es":""}`:"";
+    if(!n)h=`<li class="empty">No raga called “${esc(state.q)}”. Try another spelling, or switch to Find by notes.</li>`;
+  }
+  $("#nlist").innerHTML=h;
+}
+function renderSysChips(){
+  const opts=[["all","All"],["C","Carnatic"],["H","Hindustani"],["A","Maqam"],["W","Western"]];
+  $("#sysf").innerHTML=opts.map(([k,l])=>`<button class="chip" data-s="${k}" aria-pressed="${state.sys===k}">${l}</button>`).join("");
+}
+
+/* ---------------- search: notes ---------------- */
+function renderNoteSearch(){
+  const sel=state.notes;
+  $("#mpiano").innerHTML=pianoSVG({set:[],from:state.tonic,to:state.tonic+12,labels:Object.fromEntries([...Array(12)].map((_,i)=>[i,genLabel(i,state.lbl).split("/")[0]])),clickable:true,activeRange:[0,12],selected:sel,id:"mp"});
+  $("#ngrid").innerHTML=[...Array(12)].map((_,pc)=>{
+    const lab=genLabel(pc,state.lbl);const sub=state.lbl==="W"?genLabel(pc,"C"):westName(pc);
+    return `<button class="note${pc===0?" sa":""}" data-pc="${pc}" aria-pressed="${sel.has(pc)}" ${pc===0?'aria-disabled="true" title="Sa is always present"':""}><b>${esc(lab)}</b><small>${esc(sub)}</small></button>`}).join("");
+  $("#lblstyle").innerHTML=[["C","Carnatic"],["H","Sargam"],["W","Letters"]].map(([k,l])=>`<button class="chip" data-l="${k}" aria-pressed="${state.lbl===k}">${l}</button>`).join("");
+  document.querySelectorAll("#mmode button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===state.mode));
+  // match
+  const s=[...sel].sort((a,b)=>a-b);
+  const pool=R.filter(r=>!r.micro);
+  let res=[];
+  if(state.mode==="exact")res=pool.filter(r=>r.key===s.join(",")).map(r=>({r}));
+  else if(state.mode==="has")res=pool.filter(r=>s.every(p=>r.set.includes(p))).map(r=>({r,x:r.set.length-s.length})).sort((a,b)=>a.x-b.x);
+  else res=pool.filter(r=>r.set.every(p=>sel.has(p))).map(r=>({r,x:s.length-r.set.length})).sort((a,b)=>a.x-b.x);
+  res.sort((a,b)=>(a.x||0)-(b.x||0)||ORDER.indexOf(a.r.sys)-ORDER.indexOf(b.r.sys));
+  let h=res.slice(0,150).map(({r})=>itemHTML(r,SYSN[r.sys]+" · "+r.kind)).join("");
+  let msg=`${res.length} match${res.length===1?"":"es"} for ${s.length} note${s.length>1?"s":""}`;
+  if(!res.length){
+    if(state.mode==="exact"&&s.length>1){
+      const near=pool.map(r=>{const d=r.set.filter(p=>!sel.has(p)).length+s.filter(p=>!r.set.includes(p)).length;return{r,d}}).filter(x=>x.d===1).sort((a,b)=>ORDER.indexOf(a.r.sys)-ORDER.indexOf(b.r.sys));
+      h=`<li class="empty">No exact match. ${near.length?"These differ by one note:":"Try “Has all these”."}</li>`+near.map(({r})=>itemHTML(r,SYSN[r.sys]+" · differs by one note")).join("");
+    }else h=`<li class="empty">${s.length===1?"Add notes after Sa to start matching.":"Nothing matches. Try a different match type."}</li>`;
+  }
+  $("#ncount").textContent=msg+(state.mode!=="exact"?" · closest first":"")+" · quarter-tone maqamat are left out";
+  $("#mlist").innerHTML=h;
+}
+
+/* ---------------- detail ---------------- */
+function rowsFor(r){return r.sys==="C"?["Arohanam","Avarohanam"]:r.sys==="H"?["Aroh","Avroh"]:["Ascending","Descending"]}
+function renderMain(){
+  const r=BYID[state.sel];if(!r)return;
+  const spelled=spellSet(r.set);
+  const labels={};r.set.filter(v=>v%1===0).forEach(v=>{labels[v]=r.sys==="A"||r.sys==="W"?spelled[v]:nativeName(r,v,spelled)});
+  r.set.filter(v=>v%1).forEach(v=>{const lo=Math.floor(v),hi=Math.ceil(v)%12;labels[labels[lo]===undefined?lo:hi]=spelled[v]});
+  const [l1,l2]=rowsFor(r);
+  const steps=stepsOf(r.set);
+  const westRow=r.set.map(v=>`<span class="tok plain">${esc(spelled[v])}</span>`).join("");
+  const sargamRow=(r.sys==="C"||r.sys==="H")?"":r.set.filter(v=>v%1===0).map(v=>`<span class="tok plain">${esc(r.sys==="W"||r.sys==="A"?C_GEN[v]:"")}</span>`).join("");
+  let h=`<div class="rhead sys-${r.sys}"><div><div class="eyebrow"><span class="tag">${SYSN[r.sys]}</span>${esc(r.kind)}</div>
+    <h1 class="rname">${esc(r.name)}${r.ar?`<span class="script" lang="ar">${r.ar}</span>`:""}</h1>
+    ${r.aka.length?`<div class="aka">Also: ${esc(r.aka.join(", "))}</div>`:""}</div>
+    <div class="playbar"><button class="btn primary" data-play="both">${PLAY.replace("<svg",'<svg aria-hidden="true"')}Play up &amp; down</button></div></div>
+  <div class="pianowrap">${pianoSVG({set:r.set,from:state.tonic-2,to:state.tonic+14,labels,id:"mainPiano"})}
+    <div class="keyhint"><span><i style="background:var(--ksa)"></i>Sa (${esc(TONICS[state.tonic][0])})</span><span><i style="background:var(--kon)"></i>Notes of the raga</span>${r.micro?`<span><i style="background:repeating-linear-gradient(45deg,var(--kon) 0 3px,var(--kw) 3px 6px)"></i>Quarter tone sits between the two hatched keys</span>`:""}<span><i style="background:var(--klit)"></i>Now playing</span></div></div>
+  <div class="scales">
+    <div class="srow" data-row="aro"><span class="lab">${l1}</span><div class="sw">${r.aro.map((t,i)=>tokHTML(r,t,spelled,i)).join("")}</div><button class="iconbtn" data-play="aro" data-label="Play ${l1}" aria-label="Play ${l1}">${PLAY}</button></div>
+    <div class="srow" data-row="ava"><span class="lab">${l2}</span><div class="sw">${r.ava.map((t,i)=>tokHTML(r,t,spelled,i)).join("")}</div><button class="iconbtn" data-play="ava" data-label="Play ${l2}" aria-label="Play ${l2}">${PLAY}</button></div>
+    ${r.sys==="C"||r.sys==="H"?`<div class="srow"><span class="lab">Western, Sa = ${esc(TONICS[state.tonic][0])}</span><div class="sw">${westRow}</div><span></span></div>`:`<div class="srow"><span class="lab">Carnatic swaras</span><div class="sw">${r.set.map(v=>`<span class="tok plain">${v%1?"~":""}${esc(C_GEN[Math.round(v)%12])}</span>`).join("")}</div><span></span></div>`}
+    <div class="srow"><span class="lab">Intervals</span><div class="steps">${steps.join(" · ")} <span style="opacity:.7">semitones · ${r.set.length} notes${r.set.length===5?" (audava)":r.set.length===6?" (shadava)":r.set.length===7?" (sampurna)":""}</span></div><span></span></div>
+  </div>`;
+  // across traditions
+  h+=`<h2 class="sec">Across traditions</h2><p class="secnote">${r.micro?"This maqam uses quarter tones, which a piano cannot play. Below are the scales you get by rounding each quarter tone down or up.":"Scales from every tradition that use exactly the same set of notes. Same notes does not mean same music: each tradition ornaments and phrases them in its own way."}</p>`;
+  if(!r.micro){h+=xGrid(BYSET.get(r.key).filter(x=>x!==r),r.set)}
+  else{
+    const lo=[...new Set(r.set.map(v=>Math.floor(v)))].sort((a,b)=>a-b),hi=[...new Set(r.set.map(v=>Math.ceil(v)%12))].sort((a,b)=>a-b);
+    h+=`<div class="approx">Quarter tones rounded down</div>`+xGrid(BYSET.get(lo.join(","))||[],lo)+`<div class="approx" style="margin-top:12px">Quarter tones rounded up</div>`+xGrid(BYSET.get(hi.join(","))||[],hi);
+  }
+  // family
+  const fam=familyHTML(r);if(fam)h+=fam;
+  // graha
+  if(!r.micro){
+    const rows=r.set.filter(p=>p!==0).map(p=>{const rot=r.set.map(v=>pcOf(v-p)).sort((a,b)=>a-b);const m=BYSET.get(rot.join(","))||[];return{p,m}}).filter(x=>x.m.length);
+    h+=`<h2 class="sec">${r.sys==="C"?"Graha bhedam":"Shift the tonic"}</h2><p class="secnote">Keep the same notes but treat another one as Sa. Carnatic theory calls this graha bhedam; in Western terms it is a mode rotation.</p>`;
+    h+=rows.length?`<div class="graha">${rows.map(({p,m})=>`<div class="grow"><span class="from">Sa → ${esc(nativeName(r,p,spelled))}</span><span class="to">${pickRot(m).map(x=>`<button class="xlink sys-${x.sys}" data-id="${x.id}"><span class="inline-sys"></span>${esc(x.name)}</button>`).join("")}</span></div>`).join("")}</div>`:`<p class="xnone">No other scale in the atlas comes from rotating this one.</p>`;
+  }
+  $("#main").innerHTML=h;
+}
+function pickRot(m){const seen=new Set();return m.filter(x=>{const k=x.sys+(x.mela?"m":"");if(x.sys==="C"&&!x.mela)return true;if(seen.has(k))return false;seen.add(k);return true}).slice(0,6)}
+function xGrid(list,set){
+  return `<div class="xgrid">${ORDER.map(s=>{
+    const items=list.filter(x=>x.sys===s);
+    let inner=items.map(x=>`<button class="xlink" data-id="${x.id}">${esc(x.name)}<small>${esc(x.kind)}</small></button>`).join("");
+    if(!items.length){
+      const near=R.filter(x=>x.sys===s&&!x.micro&&set&&(x.set.filter(p=>!set.includes(p)).length+set.filter(p=>!x.set.includes(p)).length)===1).slice(0,2);
+      inner=`<span class="xnone">No exact match</span>`+(near.length?`<span class="approx">One note away</span>`+near.map(x=>`<button class="xlink" data-id="${x.id}">${esc(x.name)}<small>${esc(x.kind)}</small></button>`).join(""):"");
+    }
+    return `<div class="xcol sys-${s}"><h3>${SYSN[s]}</h3>${inner}</div>`}).join("")}</div>`;
+}
+function familyHTML(r){
+  let title="",items=[];
+  if(r.parentMela){title="Parent melakarta";items=[MELA_BY_N[r.parentMela]]}
+  else if(r.mela){items=R.filter(x=>x.parentMela===r.mela);title="Janya ragas in this atlas"}
+  else if(r.isThaat){items=R.filter(x=>x.th===r.thaatName);title="Ragas of this thaat in the atlas"}
+  else if(r.th&&r.th!=="—"){items=R.filter(x=>x.isThaat&&x.thaatName===r.th);title="Parent thaat"}
+  if(!items.length)return"";
+  return `<h2 class="sec">${title}</h2><div class="fam">${items.map(x=>`<button class="xlink sys-${x.sys}" data-id="${x.id}"><span class="inline-sys"></span>${esc(x.name)}</button>`).join("")}</div>`;
+}
+function renderAbout(){
+  const r=BYID[state.sel];
+  const comps=r.comps&&r.comps.length?`<ul class="comps">${r.comps.map(c=>`<li><div><b>${esc(c.t)}</b><span>${esc(c.by)}</span></div></li>`).join("")}</ul>`+(r.compsGeneric?`<p class="note-src" style="margin-top:8px">No widely known stand-alone piece is listed for this melakarta; these works cover all 72.</p>`:""):`<p class="xnone">${r.isThaat?"A thaat is a classification frame rather than a performed raga; see the ragas grouped under it.":"No single well-documented composition is listed here."}</p>`;
+  const facts=[];
+  if(r.mela)facts.push(["Number",`${r.mela} of 72`],["Chakra",r.chakra]);
+  if(r.parentMela)facts.push(["Parent",`${MELA[r.parentMela-1]} (${r.parentMela})`]);
+  if(r.th&&r.th!=="—")facts.push(["Thaat",r.th]);
+  if(r.time)facts.push(["Time",r.time]);
+  if(r.mood)facts.push(["Mood",r.mood]);
+  facts.push(["Notes",`${r.set.length}`]);
+  $("#about").innerHTML=`<div class="panel sys-${r.sys}">
+    <h2>${esc(r.name)}</h2><div class="meta">${SYSN[r.sys]} · ${esc(r.kind)}</div>
+    <dl class="facts">${facts.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+    <div class="blk"><h3>Origin</h3><p>${esc(r.origin||"Traditional.")}</p></div>
+    <div class="blk"><h3>Named or created by</h3><p>${esc(r.coined||"Traditional; no single originator.")}</p></div>
+    <div class="blk"><h3>Compositions</h3>${comps}</div>
+    <div class="blk"><h3>Character</h3><p>${esc(r.desc||"")}</p></div>
+    <p class="note-src">Scales show the raga's skeleton only. Gamaka, phrasing, emphasised notes and rasa are what make a raga, and two ragas with identical notes can sound entirely different.</p>
+  </div>`;
+}
+
+/* ---------------- wiring ---------------- */
+function select(id,push=true){if(!BYID[id])return;stopPlay();state.sel=id;renderMain();renderAbout();
+  document.querySelectorAll(".list button[aria-current]").forEach(b=>b.removeAttribute("aria-current"));document.querySelectorAll(`.list button[data-id="${id}"]`).forEach(b=>b.setAttribute("aria-current","true"));
+  if(push&&location.hash.slice(1)!==id){try{history.replaceState(null,"","#"+id)}catch(e){location.hash=id}}
+  if(window.innerWidth<=780&&push)$("#main").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function setTab(t){state.tab=t;$("#tab-name").setAttribute("aria-selected",t==="name");$("#tab-notes").setAttribute("aria-selected",t==="notes");$("#pane-name").hidden=t!=="name";$("#pane-notes").hidden=t!=="notes";if(t==="notes")renderNoteSearch()}
+$("#tonic").innerHTML=TONICS.map((t,i)=>`<option value="${i}">${t[0]}</option>`).join("");$("#tonic").value=state.tonic;
+$("#tonic").addEventListener("change",e=>{state.tonic=+e.target.value;try{localStorage.setItem("ra-tonic",state.tonic)}catch(_){}stopPlay();renderMain();if(state.tab==="notes")renderNoteSearch()});
+$("#drone").addEventListener("click",e=>{const on=!droneTimer;if(on)startDrone();else stopDrone();e.currentTarget.classList.toggle("on",on);e.currentTarget.setAttribute("aria-pressed",on)});
+$("#tab-name").addEventListener("click",()=>setTab("name"));$("#tab-notes").addEventListener("click",()=>setTab("notes"));
+$("#q").addEventListener("input",e=>{state.q=e.target.value;renderNameList()});
+$("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){const b=$("#nlist button[data-id]");if(b)select(b.dataset.id)}});
+$("#sysf").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;state.sys=b.dataset.s;renderSysChips();renderNameList()});
+document.addEventListener("click",e=>{
+  const sel=e.target.closest("[data-id]");if(sel&&!e.target.closest("rect")){select(sel.dataset.id);return}
+  const pl=e.target.closest("[data-play]");if(pl){const r=BYID[state.sel];playSeq(r,pl.dataset.play,pl.classList.contains("iconbtn")?pl:null);return}
+});
+function toggleNote(pc){if(pc===0)return;state.notes.has(pc)?state.notes.delete(pc):state.notes.add(pc);if(audio()&&state.notes.has(pc))pluck(freq(pc),0.01,{dur:.8});renderNoteSearch()}
+$("#ngrid").addEventListener("click",e=>{const b=e.target.closest("[data-pc]");if(b)toggleNote(+b.dataset.pc)});
+$("#mpiano").addEventListener("click",e=>{const k=e.target.closest("rect.click");if(k)toggleNote(+k.dataset.pc)});
+$("#mpiano").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("rect.click")){e.preventDefault();const pc=+e.target.dataset.pc;toggleNote(pc);const n=document.querySelector(`#mpiano rect.click[data-pc="${pc}"]`);if(n)n.focus()}});
+$("#lblstyle").addEventListener("click",e=>{const b=e.target.closest("[data-l]");if(!b)return;state.lbl=b.dataset.l;try{localStorage.setItem("ra-lbl",state.lbl)}catch(_){}renderNoteSearch()});
+$("#mmode").addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;state.mode=b.dataset.m;renderNoteSearch()});
+$("#clearN").addEventListener("click",()=>{state.notes=new Set([0]);renderNoteSearch()});
+window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(BYID[id]&&id!==state.sel)select(id,false)});
+
+// start: Mayamalavagowla's notes pre-selected in the note finder as an example
+state.notes=new Set(BYID["c-mayamalavagowla"].set);
+const h0=location.hash.slice(1);if(BYID[h0])state.sel=h0;
+renderSysChips();renderNameList();renderMain();renderAbout();
+</script>
+
+</body></html>
